@@ -253,7 +253,7 @@ export default function Home() {
             onCreateUser={() => setIsCreateModalOpen(true)}
           />
         </div>
-        <UserStats users={users} />
+        <UserStats users={filteredUsers} />
         {filteredUsers.length === 0 ? (
           <UserEmptyState hasUsers={users.length > 0} />
         ) : (
