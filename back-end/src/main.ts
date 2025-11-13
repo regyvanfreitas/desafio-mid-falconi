@@ -1,18 +1,14 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, Logger } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
 
-  // Global prefix for all routes
-  app.setGlobalPrefix('api');
-  
   // Enable CORS for frontend communication
   app.enableCors({
-    origin: process.env.FRONTEND_URL,
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
@@ -41,12 +37,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  const port = process.env.PORT ?? 3000;
-  await app.listen(port);
-
-  logger.log(`🚀 Servidor rodando em: http://localhost:${port}`);
-  logger.log(`📚 Documentação Swagger: http://localhost:${port}/api`);
-  logger.log(`🔍 API endpoints: http://localhost:${port}/api`);
+  await app.listen(3000);
 }
 
 void bootstrap();
