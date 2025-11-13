@@ -4,9 +4,9 @@ import { UserService } from './user.service';
 import { ProfileService } from '../profiles/profile.service';
 import { CreateUserDto, UpdateUserDto, UpdateUserStatusDto } from './user.dto';
 
-// Mock uuid module
-jest.mock('uuid', () => ({
-  v4: jest.fn(() => 'mocked-uuid'),
+// Mock id-generator module
+jest.mock('../utils/id-generator', () => ({
+  uuidv4: jest.fn(() => 'mocked-uuid'),
 }));
 
 describe('UserService', () => {

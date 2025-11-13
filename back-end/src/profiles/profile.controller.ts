@@ -49,7 +49,7 @@ export class ProfileController {
     description: 'Perfil criado com sucesso',
     schema: {
       example: {
-        id: 'uuid-gerado',
+        id: 'abc123def456',
         name: 'Administrador',
       },
     },

@@ -6,7 +6,7 @@ import {
 import { User } from './user.entity';
 import { CreateUserDto, UpdateUserDto, UpdateUserStatusDto } from './user.dto';
 import { ProfileService } from '../profiles/profile.service';
-import { v4 as uuidv4 } from 'uuid';
+import { uuidv4 } from '../utils/id-generator';
 
 @Injectable()
 export class UserService {

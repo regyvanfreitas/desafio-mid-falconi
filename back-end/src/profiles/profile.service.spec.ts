@@ -3,9 +3,9 @@ import { NotFoundException } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { CreateProfileDto, UpdateProfileDto } from './profile.dto';
 
-// Mock uuid module
-jest.mock('uuid', () => ({
-  v4: jest.fn(() => 'mocked-uuid'),
+// Mock id-generator module
+jest.mock('../utils/id-generator', () => ({
+  uuidv4: jest.fn(() => 'mocked-uuid'),
 }));
 
 describe('ProfileService', () => {

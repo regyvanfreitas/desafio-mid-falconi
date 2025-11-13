@@ -54,7 +54,7 @@ export class UserController {
     description: 'Usuário criado com sucesso',
     schema: {
       example: {
-        id: 'uuid-gerado',
+        id: 'abc123def456',
         firstName: 'João',
         lastName: 'Silva',
         email: 'joao.silva@email.com',
