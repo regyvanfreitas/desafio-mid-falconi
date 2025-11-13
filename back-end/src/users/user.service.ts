@@ -29,21 +29,19 @@ export class UserService {
   findOne(id: string): User {
     const user = this.users.find((u) => u.id === id);
     if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
     return user;
   }
 
   create(createUserDto: CreateUserDto): User {
-    // Validate that the profile exists
     this.profileService.findOne(createUserDto.profileId);
 
-    // Check if email already exists
     const existingUser = this.users.find(
       (user) => user.email === createUserDto.email,
     );
     if (existingUser) {
-      throw new BadRequestException('Email already exists');
+      throw new BadRequestException('E-mail já existe');
     }
 
     const user = new User(
@@ -51,7 +49,7 @@ export class UserService {
       createUserDto.firstName,
       createUserDto.lastName,
       createUserDto.email,
-      true, // Default to active
+      true,
       createUserDto.profileId,
     );
 
@@ -62,28 +60,39 @@ export class UserService {
   update(id: string, updateUserDto: UpdateUserDto): User {
     const userIndex = this.users.findIndex((u) => u.id === id);
     if (userIndex === -1) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
 
-    // Validate profile if being updated
     if (updateUserDto.profileId) {
       this.profileService.findOne(updateUserDto.profileId);
     }
 
-    // Check if email already exists (excluding current user)
     if (updateUserDto.email) {
       const existingUser = this.users.find(
         (user) => user.email === updateUserDto.email && user.id !== id,
       );
       if (existingUser) {
-        throw new BadRequestException('Email already exists');
+        throw new BadRequestException('E-mail já existe');
       }
     }
 
-    this.users[userIndex] = {
-      ...this.users[userIndex],
-      ...updateUserDto,
-    };
+    const currentUser = this.users[userIndex];
+
+    if (updateUserDto.firstName !== undefined) {
+      currentUser.firstName = updateUserDto.firstName;
+    }
+    if (updateUserDto.lastName !== undefined) {
+      currentUser.lastName = updateUserDto.lastName;
+    }
+    if (updateUserDto.email !== undefined) {
+      currentUser.email = updateUserDto.email;
+    }
+    if (updateUserDto.isActive !== undefined) {
+      currentUser.isActive = updateUserDto.isActive;
+    }
+    if (updateUserDto.profileId !== undefined) {
+      currentUser.profileId = updateUserDto.profileId;
+    }
 
     return this.users[userIndex];
   }
@@ -91,7 +100,7 @@ export class UserService {
   updateStatus(id: string, updateUserStatusDto: UpdateUserStatusDto): User {
     const userIndex = this.users.findIndex((u) => u.id === id);
     if (userIndex === -1) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
 
     this.users[userIndex].isActive = updateUserStatusDto.isActive;
@@ -101,7 +110,7 @@ export class UserService {
   remove(id: string): void {
     const userIndex = this.users.findIndex((u) => u.id === id);
     if (userIndex === -1) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
     this.users.splice(userIndex, 1);
   }
