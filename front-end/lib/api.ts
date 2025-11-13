@@ -14,14 +14,11 @@ export interface User {
   email: string;
   isActive: boolean;
   profileId: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface Profile {
   id: string;
   name: string;
-  description: string;
 }
 
 export interface CreateUserDto {

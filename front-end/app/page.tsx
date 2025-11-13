@@ -2,26 +2,16 @@
 
 import { StatsCardSkeleton } from "@/components/StatsCardSkeleton";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/Dialog";
-import { Input } from "@/components/ui/Input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/Select";
+import { Card, CardContent } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { UserCard } from "@/components/UserCard";
 import { UserCardSkeleton } from "@/components/UserCardSkeleton";
-import { UserForm } from "@/components/UserForm";
+import { UserCreateModal } from "@/components/UserCreateModal";
+import { UserDeleteModal } from "@/components/UserDeleteModal";
+import { UserEditModal } from "@/components/UserEditModal";
+import { UserEmptyState } from "@/components/UserEmptyState";
+import { UserFilters } from "@/components/UserFilters";
+import { UserStats } from "@/components/UserStats";
 import {
   CreateUserDto,
   Profile,
@@ -30,7 +20,7 @@ import {
   User,
   usersApi,
 } from "@/lib/api";
-import { Plus, Search, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -200,9 +190,7 @@ export default function Home() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <Users className="h-8 w-8 text-primary" />
-                <h1 className="text-2xl font-bold">
-                  Gestão de Usuários
-                </h1>
+                <h1 className="text-2xl font-bold">Gestão de Usuários</h1>
               </div>
               <ThemeToggle />
             </div>
@@ -254,105 +242,20 @@ export default function Home() {
           </div>
         </div>
       </header>
-
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {/* Filters and Actions */}
-        <div className="flex flex-col lg:flex-row gap-4 mb-8">
-          <Card className="flex-1">
-            <CardContent className="p-4">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input
-                    placeholder="Pesquisar por nome ou e-mail..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-
-                <Select
-                  value={selectedProfileId}
-                  onValueChange={setSelectedProfileId}
-                >
-                  <SelectTrigger className="w-full sm:w-48">
-                    <SelectValue placeholder="Filtrar por perfil" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos os perfis</SelectItem>
-                    {profiles.map((profile) => (
-                      <SelectItem key={profile.id} value={profile.id}>
-                        {profile.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Button
-                  onClick={() => setIsCreateModalOpen(true)}
-                  className="w-full sm:w-auto"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Novo Usuário
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="mb-8">
+          <UserFilters
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            selectedProfileId={selectedProfileId}
+            setSelectedProfileId={setSelectedProfileId}
+            profiles={profiles}
+            onCreateUser={() => setIsCreateModalOpen(true)}
+          />
         </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total de Usuários
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{users.length}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                Usuários Ativos
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                {users.filter((user) => user.isActive).length}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                Usuários Inativos
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">
-                {users.filter((user) => !user.isActive).length}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Users Grid */}
+        <UserStats users={users} />
         {filteredUsers.length === 0 ? (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">
-                {users.length === 0
-                  ? "Nenhum usuário encontrado. Crie o primeiro usuário!"
-                  : "Nenhum usuário encontrado com os filtros aplicados."}
-              </p>
-            </CardContent>
-          </Card>
+          <UserEmptyState hasUsers={users.length > 0} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredUsers.map((user) => (
@@ -369,91 +272,38 @@ export default function Home() {
             ))}
           </div>
         )}
+        <UserCreateModal
+          open={isCreateModalOpen}
+          onOpenChange={setIsCreateModalOpen}
+          profiles={profiles}
+          onSubmit={handleCreateUser}
+          onCancel={() => setIsCreateModalOpen(false)}
+          loading={formLoading}
+        />
+        <UserEditModal
+          open={isEditModalOpen}
+          onOpenChange={setIsEditModalOpen}
+          user={editingUser}
+          profiles={profiles}
+          onSubmit={handleUpdateUser}
+          onCancel={() => {
+            setIsEditModalOpen(false);
+            setEditingUser(null);
+          }}
+          loading={formLoading}
+        />
+        <UserDeleteModal
+          open={isDeleteModalOpen}
+          onOpenChange={setIsDeleteModalOpen}
+          user={userToDelete}
+          onCancel={() => {
+            setIsDeleteModalOpen(false);
+            setUserToDelete(null);
+          }}
+          onConfirm={confirmDeleteUser}
+          loading={deletingUserId !== null}
+        />
       </main>
-
-      {/* Create Modal */}
-      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Criar Novo Usuário</DialogTitle>
-          </DialogHeader>
-          <UserForm
-            profiles={profiles}
-            onSubmit={handleCreateUser}
-            onCancel={() => setIsCreateModalOpen(false)}
-            loading={formLoading}
-          />
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Modal */}
-      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Editar Usuário</DialogTitle>
-          </DialogHeader>
-          {editingUser && (
-            <UserForm
-              user={editingUser}
-              profiles={profiles}
-              onSubmit={handleUpdateUser}
-              onCancel={() => {
-                setIsEditModalOpen(false);
-                setEditingUser(null);
-              }}
-              loading={formLoading}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Modal */}
-      <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Confirmar Exclusão</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <p className="text-sm text-muted-foreground">
-              Tem certeza que deseja excluir o usuário{" "}
-              <span className="font-semibold text-foreground">
-                {userToDelete?.firstName} {userToDelete?.lastName}
-              </span>
-              ?
-            </p>
-            <p className="text-sm text-muted-foreground mt-2">
-              Esta ação não pode ser desfeita.
-            </p>
-          </div>
-          <div className="flex justify-end space-x-2">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsDeleteModalOpen(false);
-                setUserToDelete(null);
-              }}
-              disabled={deletingUserId !== null}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeleteUser}
-              disabled={deletingUserId !== null}
-              className="flex items-center gap-2"
-            >
-              {deletingUserId ? (
-                <>
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                  Excluindo...
-                </>
-              ) : (
-                "Excluir Usuário"
-              )}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

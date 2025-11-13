@@ -5,12 +5,10 @@ const mockProfiles = [
   {
     id: "1",
     name: "Admin",
-    description: "Administrator profile",
   },
   {
     id: "2",
     name: "User",
-    description: "Regular user profile",
   },
 ];
 
