@@ -14,13 +14,23 @@ import {
 } from "@/components/ui/Select";
 import { toast } from "sonner";
 
-interface UserFormProps {
-  user?: User;
+interface BaseUserFormProps {
   profiles: Profile[];
-  onSubmit: (data: CreateUserDto | UpdateUserDto) => Promise<void> | void;
   onCancel: () => void;
   loading?: boolean;
 }
+
+interface CreateUserFormProps extends BaseUserFormProps {
+  user?: undefined;
+  onSubmit: (data: CreateUserDto) => Promise<void> | void;
+}
+
+interface UpdateUserFormProps extends BaseUserFormProps {
+  user?: User;
+  onSubmit: (data: UpdateUserDto) => Promise<void> | void;
+}
+
+type UserFormProps = CreateUserFormProps | UpdateUserFormProps;
 
 export function UserForm({
   user,

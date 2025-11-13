@@ -28,7 +28,7 @@ import {
   profilesApi,
   UpdateUserDto,
   User,
-  usersApi
+  usersApi,
 } from "@/lib/api";
 import { Plus, Search, Users } from "lucide-react";
 import { useEffect, useState } from "react";
