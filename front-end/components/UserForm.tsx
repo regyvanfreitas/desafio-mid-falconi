@@ -46,6 +46,14 @@ export function UserForm({
     profileId: user?.profileId || "",
   });
 
+  // Verifica se há alterações no formulário (apenas para edição)
+  const hasChanges = user
+    ? formData.firstName !== user.firstName ||
+      formData.lastName !== user.lastName ||
+      formData.email !== user.email ||
+      formData.profileId !== user.profileId
+    : true;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -56,7 +64,13 @@ export function UserForm({
     }
 
     if (user) {
-      // Para edição, enviar apenas campos alterados
+      // Para edição, verifica se há alterações antes de enviar
+      if (!hasChanges) {
+        toast.info("Nenhuma alteração foi feita.");
+        return;
+      }
+
+      // Enviar apenas campos alterados
       const changes: UpdateUserDto = {};
 
       if (formData.firstName !== user.firstName) {
@@ -74,7 +88,7 @@ export function UserForm({
 
       onSubmit(changes);
     } else {
-      // Para criação, enviar todos os dados
+      // Para criação, envia todos os dados
       onSubmit(formData as CreateUserDto);
     }
   };
@@ -157,7 +171,7 @@ export function UserForm({
         >
           Cancelar
         </Button>
-        <Button type="submit" disabled={loading}>
+        <Button type="submit" disabled={loading || (user && !hasChanges)}>
           {loading
             ? "Salvando..."
             : user

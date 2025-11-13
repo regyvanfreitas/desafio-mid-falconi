@@ -76,6 +76,14 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Toast colors */
+  --toast-success-bg: oklch(0.94 0.05 142);
+  --toast-success-text: oklch(0.3 0.15 142);
+  --toast-success-border: oklch(0.7 0.15 142);
+  --toast-error-bg: oklch(0.95 0.05 27);
+  --toast-error-text: oklch(0.4 0.2 27);
+  --toast-error-border: oklch(0.65 0.2 27);
 }
 
 .dark {
@@ -110,6 +118,14 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Toast colors for dark mode */
+  --toast-success-bg: oklch(0.15 0.05 142);
+  --toast-success-text: oklch(0.8 0.15 142);
+  --toast-success-border: oklch(0.4 0.15 142);
+  --toast-error-bg: oklch(0.15 0.05 27);
+  --toast-error-text: oklch(0.8 0.2 27);
+  --toast-error-border: oklch(0.45 0.2 27);
 }
 
 @layer base {
@@ -122,4 +138,25 @@
   button {
     cursor: pointer;
   }
+}
+
+/* Toast Styling */
+.toaster [data-sonner-toast][data-type="success"] {
+  background-color: var(--toast-success-bg) !important;
+  border-color: var(--toast-success-border) !important;
+  color: var(--toast-success-text) !important;
+}
+
+.toaster [data-sonner-toast][data-type="error"] {
+  background-color: var(--toast-error-bg) !important;
+  border-color: var(--toast-error-border) !important;
+  color: var(--toast-error-text) !important;
+}
+
+.toaster [data-sonner-toast][data-type="success"] [data-icon] {
+  color: var(--toast-success-border) !important;
+}
+
+.toaster [data-sonner-toast][data-type="error"] [data-icon] {
+  color: var(--toast-error-border) !important;
 }

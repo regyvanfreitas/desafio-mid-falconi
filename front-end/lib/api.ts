@@ -44,7 +44,14 @@ export interface UpdateUserDto {
 
 // API de usuários
 export const usersApi = {
-  getAll: () => api.get<User[]>("/users"),
+  getAll: (profileId?: string) => {
+    const queryParams = new URLSearchParams();
+    if (profileId && profileId !== "all") {
+      queryParams.append("profileId", profileId);
+    }
+    const queryString = queryParams.toString();
+    return api.get<User[]>(`/users${queryString ? `?${queryString}` : ""}`);
+  },
   getById: (id: string) => api.get<User>(`/users/${id}`),
   create: (data: CreateUserDto) => api.post<User>("/users", data),
   update: (id: string, data: UpdateUserDto) =>

@@ -12,6 +12,8 @@ interface UserCardProps {
   onEdit: (user: User) => void;
   onDelete: (user: User) => void;
   onToggleStatus: (user: User) => void;
+  isDeleting?: boolean;
+  isTogglingStatus?: boolean;
 }
 
 export function UserCard({
@@ -20,6 +22,8 @@ export function UserCard({
   onEdit,
   onDelete,
   onToggleStatus,
+  isDeleting = false,
+  isTogglingStatus = false,
 }: UserCardProps) {
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -50,6 +54,7 @@ export function UserCard({
             size="sm"
             variant="outline"
             onClick={() => onEdit(user)}
+            disabled={isDeleting || isTogglingStatus}
             className="flex items-center gap-2"
           >
             <Edit className="h-4 w-4" />
@@ -60,9 +65,14 @@ export function UserCard({
             size="sm"
             variant={user.isActive ? "secondary" : "default"}
             onClick={() => onToggleStatus(user)}
-            className="flex items-center gap-2"
+            disabled={isDeleting || isTogglingStatus}
+            className="flex items-center gap-2 w-26"
           >
-            {user.isActive ? (
+            {isTogglingStatus ? (
+              <>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              </>
+            ) : user.isActive ? (
               <>
                 <UserX className="h-4 w-4" />
                 Desativar
@@ -79,10 +89,20 @@ export function UserCard({
             size="sm"
             variant="destructive"
             onClick={() => onDelete(user)}
+            disabled={isDeleting || isTogglingStatus}
             className="flex items-center gap-2"
           >
-            <Trash2 className="h-4 w-4" />
-            Excluir
+            {isDeleting ? (
+              <>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                Excluindo...
+              </>
+            ) : (
+              <>
+                <Trash2 className="h-4 w-4" />
+                Excluir
+              </>
+            )}
           </Button>
         </div>
       </CardContent>
